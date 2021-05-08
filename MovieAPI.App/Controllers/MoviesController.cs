@@ -20,7 +20,7 @@ namespace MovieAPI.App.Controllers
 		public List<Metadata> Get()
 		{
 			var metadataLines = Path.Combine(currentDirectory, "CsvFiles/metadata.csv");
-			var data = ReadCSVFile<Metadata>.Read(metadataLines);
+			var data = CSVReader<Metadata>.Read(metadataLines);
 			return data;
 		}
 
@@ -29,7 +29,6 @@ namespace MovieAPI.App.Controllers
 		public IActionResult PostMetadata([FromBody]Metadata file)
 		{
 			var filePath = Path.Combine(currentDirectory, "CsvFiles/metadata.csv");
-
 			var data = file.ToString();
 			System.IO.File.AppendAllText(filePath, data);
 			return Ok();
@@ -40,8 +39,12 @@ namespace MovieAPI.App.Controllers
 		public IActionResult GetByMovieId(int movieId)
 		{
 			var filePath = Path.Combine(currentDirectory, "CsvFiles/metadata.csv");
-			var data = ReadCSVFile<Metadata>.Read(filePath);
+			var data = CSVReader<Metadata>.Read(filePath);
 			var results = data.Where(w => w.MovieId == movieId).ToList();
+
+			if (results.Count <= 0)
+				return NotFound();
+
 			return Ok(results);
 		}
 
@@ -50,7 +53,8 @@ namespace MovieAPI.App.Controllers
 		public IActionResult GetStats()
 		{
 			var filePath = Path.Combine(currentDirectory, "CsvFiles/stats.csv");
-			var data = ReadCSVFile<Stats>.Read(filePath);
+			var data = CSVReader<Stats>.Read(filePath);
+			data = data.OrderByDescending(d => d.watchDurationMs).ToList();
 			return Ok(data);
 		}
 	}

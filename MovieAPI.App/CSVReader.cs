@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MovieAPI.App
 {
-	public static class ReadCSVFile<T>
+	public static class CSVReader<T>
 	{
 		public static List<T> Read(string file)
 		{
